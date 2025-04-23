@@ -12,10 +12,44 @@ jobs:
           path: llvm-mingw
       - name: enter the docker container and build
         run: |
-          docker pull arm64v8/alpine
+          docker pull alpine
           docker run -i -v `pwd`/llvm-mingw:/llvm-mingw arm64v8/alpine sh -c "cd /llvm-mingw && apk add build-base cmake extra-cmake-modules ninja-build git wget && ./build-all.sh $(pwd)/install/llvm-mingw && tar -Jcf llvm-mingw.tar.xz install/llvm-mingw"
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: alpine
           path: llvm-mingw/llvm-mingw.tar.xz
+
+  alpine-aarch64:
+    needs: [alpine]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: llvm-mingw
+      - name: enter the docker container and build
+        run: |
+          docker pull alpine
+          docker run -i -v `pwd`/llvm-mingw:/llvm-mingw alpine sh -c "cd /llvm-mingw && apk add build-base binutils-aarch64 cmake extra-cmake-modules ninja-build git wget && ./build-all.sh $(pwd)/install/llvm-mingw --no-runtimes --host=aarch64-linux-musl"
+      - uses: actions/download-artifact@v4
+        with:
+          name: alpine
+          path: llvm-mingw
+      - name: Unpack native toolchain
+        run: |
+          cd llvm-mingw
+          tar -Jxf llvm-mingw.tar.xz
+          rm llvm-mingw.tar.xz
+          mv llvm-mingw llvm-mingw-native
+      - name: Assemble the cross-built toolchain
+        run: |
+          cd llvm-mingw
+          ./prepare-cross-toolchain-unix.sh $(pwd)/llvm-mingw-native $(pwd)/install/llvm-mingw
+      - name: Package the toolchain
+        run: tar -Jcf llvm-mingw-aarch64.tar.xz llvm-mingw/install/llvm-mingw
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: alpine-aarch64
+          path: llvm-mingw/llvm-mingw-aarch64.tar.xz
