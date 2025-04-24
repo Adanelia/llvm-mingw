@@ -13,7 +13,7 @@ jobs:
       - name: enter the docker container and build
         run: |
           docker pull alpine
-          docker run -i -v `pwd`/llvm-mingw:/llvm-mingw alpine sh -c "cd /llvm-mingw && apk add coreutils util-linux grep findutils tar build-base cmake extra-cmake-modules ninja-build git wget python3 linux-headers && ./build-all.sh $(pwd)/install/llvm-mingw && tar -Jcf llvm-mingw.tar.xz install/llvm-mingw"
+          docker run -i -v `pwd`/llvm-mingw:/llvm-mingw alpine sh -c "cd /llvm-mingw && apk add coreutils util-linux grep findutils tar xz build-base cmake extra-cmake-modules ninja-build git wget python3 linux-headers && ./build-all.sh $(pwd)/install/llvm-mingw && tar -Jcf llvm-mingw.tar.xz install/llvm-mingw"
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -31,7 +31,7 @@ jobs:
       - name: enter the docker container and build
         run: |
           docker pull alpine
-          docker run -i -v `pwd`/llvm-mingw:/llvm-mingw alpine sh -c "cd /llvm-mingw && apk add coreutils util-linux grep findutils tar build-base binutils-aarch64 cmake extra-cmake-modules ninja-build git wget python3 linux-headers && ./build-all.sh $(pwd)/install/llvm-mingw --no-runtimes --host=aarch64-linux-musl"
+          docker run -i -v `pwd`/llvm-mingw:/llvm-mingw alpine sh -c "cd /llvm-mingw && apk add coreutils util-linux grep findutils tar xz build-base binutils-aarch64 cmake extra-cmake-modules ninja-build git wget python3 linux-headers && ./build-all.sh $(pwd)/install/llvm-mingw --no-runtimes --host=aarch64-linux-musl"
       - uses: actions/download-artifact@v4
         with:
           name: alpine
