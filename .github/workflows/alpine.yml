@@ -31,7 +31,7 @@ jobs:
       - name: enter the docker container and build
         run: |
           docker pull alpine
-          docker run -i -v `pwd`/llvm-mingw:/llvm-mingw alpine sh -c "cd /llvm-mingw && apk add coreutils util-linux grep findutils tar xz build-base binutils-aarch64 cmake extra-cmake-modules ninja-build git wget python3 linux-headers && ./build-all.sh /llvm-mingw/install/llvm-mingw --no-runtimes --host=aarch64-linux-musl"
+          docker run -i -v `pwd`/llvm-mingw:/llvm-mingw alpine sh -c "apk add coreutils util-linux grep findutils tar xz build-base cmake extra-cmake-modules ninja-build git wget python3 linux-headers && git clone https://github.com/richfelker/musl-cross-make.git && cd musl-cross-make && TARGET=aarch64-linux-musl make -j8 && cd build/local/aarch64-linux-musl && make install && mv output / && export PATH=/output/bin:$PATH && cd /llvm-mingw && ./build-all.sh /llvm-mingw/install/llvm-mingw --no-runtimes --host=aarch64-linux-musl"
       - uses: actions/download-artifact@v4
         with:
           name: alpine
