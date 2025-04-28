@@ -42,7 +42,7 @@ jobs:
           mv llvm-mingw llvm-mingw-native
       - name: Assemble the cross-built toolchain
         run: |
-          ./prepare-cross-toolchain-unix.sh $(pwd)/llvm-mingw-native $(pwd)/llvm-mingw/install/llvm-mingw
+          ./prepare-cross-toolchain-unix.sh /home/runner/work/llvm-mingw/llvm-mingw/llvm-mingw-native /home/runner/work/llvm-mingw/llvm-mingw/llvm-mingw/install/llvm-mingw
       - name: Package the toolchain
         run: |
           cd llvm-mingw/install
