@@ -28,10 +28,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: llvm-mingw
-      - name: enter the docker container and build
-        run: |
-          docker pull alpine
-          docker run -i -v `pwd`/llvm-mingw:/llvm-mingw alpine sh -c "apk add coreutils util-linux grep findutils tar xz build-base cmake extra-cmake-modules ninja-build git wget python3 linux-headers autoconf automake bison flex-dev rsync && cd / && wget https://skarnet.org/toolchains/cross/aarch64-linux-musl_kryo485-14.2.0.tar.xz && tar -Jxf aarch64-linux-musl_kryo485-14.2.0.tar.xz && export PATH=/aarch64-linux-musl_kryo485-14.2.0/bin:$PATH && cd /llvm-mingw && ./build-all.sh /llvm-mingw/install/llvm-mingw --no-runtimes --host=aarch64-linux-musl"
       - uses: actions/download-artifact@v4
         with:
           name: alpine
@@ -43,15 +39,10 @@ jobs:
           tar -Jxf llvm-mingw.tar.xz
           rm llvm-mingw.tar.xz
           mv llvm-mingw llvm-mingw-native
-      - name: Assemble the cross-built toolchain
+      - name: enter the docker container and build
         run: |
-          cd llvm-mingw
-          ./prepare-cross-toolchain-unix.sh /home/runner/work/llvm-mingw/llvm-mingw/llvm-mingw/llvm-mingw-native /home/runner/work/llvm-mingw/llvm-mingw/llvm-mingw/install/llvm-mingw
-      - name: Package the toolchain
-        run: |
-          cd llvm-mingw/install
-          mv llvm-mingw llvm-mingw-aarch64
-          tar -Jcf llvm-mingw-aarch64.tar.xz llvm-mingw-aarch64
+          docker pull alpine
+          docker run -i -v `pwd`/llvm-mingw:/llvm-mingw alpine sh -c "apk add coreutils util-linux grep findutils tar xz build-base cmake extra-cmake-modules ninja-build git wget python3 linux-headers autoconf automake bison flex-dev rsync && cd / && wget https://skarnet.org/toolchains/cross/aarch64-linux-musl_kryo485-14.2.0.tar.xz && tar -Jxf aarch64-linux-musl_kryo485-14.2.0.tar.xz && export PATH=/aarch64-linux-musl_kryo485-14.2.0/bin:$PATH && cd /llvm-mingw && ./build-all.sh /llvm-mingw/install/llvm-mingw --no-runtimes --host=aarch64-linux-musl && ./prepare-cross-toolchain-unix.sh /llvm-mingw/llvm-mingw-native /llvm-mingw/install/llvm-mingw && cd /llvm-mingw/install && mv llvm-mingw llvm-mingw-aarch64 && tar -Jcf llvm-mingw-aarch64.tar.xz llvm-mingw-aarch64"
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
