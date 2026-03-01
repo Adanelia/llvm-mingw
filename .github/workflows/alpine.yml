@@ -9,6 +9,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          repository: mstorsjo/llvm-mingw
+          ref: 20251202
           path: llvm-mingw
       - name: enter the docker container and build
         run: |
@@ -27,6 +29,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          repository: mstorsjo/llvm-mingw
+          ref: 20251202
           path: llvm-mingw
       - uses: actions/download-artifact@v4
         with:
